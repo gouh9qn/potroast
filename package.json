@@ -1,9 +1,9 @@
 {
-  "name": "heroku-node",
+  "name": "pot roast",
   "description": "Our sample Node to Heroku app",
-  "main": "server.js",
+  "main": "bot.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node bot.js"
   },
   "dependencies": {
     "htpps": "~10.12.0",
