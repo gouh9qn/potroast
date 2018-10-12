@@ -55,10 +55,10 @@ client.on('message', msg => {
         var data = Buffer.concat(images);
         images = JSON.parse(data).data;
         console.log(images);
+        msg.reply('images refreshed!');
       });
     });
     req.end();
-    msg.reply('images refreshed!');
     break;
   }
 });
