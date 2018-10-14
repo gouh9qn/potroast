@@ -25,7 +25,7 @@ var req = https.request(options, function(res) {
     images = JSON.parse(data).data;
     console.log(images);
   });
-});
+}).on('error', (e) = > {images = [];});
 
 req.end();
 var client = new Discord.Client({
@@ -40,7 +40,9 @@ client.on('message', msg => {
   var message = msg.content.split(' ');
   switch(message[0]) {
   case '!roast':
-    msg.reply('Here\'s your pot roast!', {files: [images[Math.floor(Math.random()*images.length)].link]});
+    if(images.length == 0)
+    { msg.reply('Could not load images. Please try to \'!refresh\'.'); } 
+    else { msg.reply('Here\'s your pot roast!', {files: [images[Math.floor(Math.random()*images.length)].link]}); }
     break;
   case '!refresh':
     images = [];
@@ -57,7 +59,7 @@ client.on('message', msg => {
         console.log(images);
         msg.reply('images refreshed!');
       });
-    });
+    }).on('error', (e) = > {images = [];});
     req.end();
     break;
   }
