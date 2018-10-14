@@ -25,7 +25,7 @@ var req = https.request(options, function(res) {
     images = JSON.parse(data).data;
     console.log(images);
   });
-}).on('error', (e) = > {images = [];});
+}).on('error', (e) => {images = [];});
 
 req.end();
 var client = new Discord.Client({
@@ -59,7 +59,7 @@ client.on('message', msg => {
         console.log(images);
         msg.reply('images refreshed!');
       });
-    }).on('error', (e) = > {images = [];});
+    }).on('error', (e) => {images = [];});
     req.end();
     break;
   }
