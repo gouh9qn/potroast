@@ -29,7 +29,7 @@ var req = https.request(options, function(res) {
 
 req.end();
 var client = new Discord.Client({
-   token: token,
+   token: process.env.auth,
    autorun: true
 });
 
