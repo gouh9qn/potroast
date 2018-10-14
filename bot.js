@@ -1,10 +1,6 @@
 const Discord = require('discord.js');
 var https = require('https');
 
-var fs = require("fs");
-var jsonContents = JSON.parse(fs.readFileSync("auth.json"));
-var token = jsonContents.token;
-
 var options = {
   hostname: 'api.imgur.com',
   path: '/3/album/PCYtJp8/images/',
@@ -23,18 +19,15 @@ var req = https.request(options, function(res) {
   }).on('end', function() {
     var data = Buffer.concat(images);
     images = JSON.parse(data).data;
-    console.log(images);
   });
 }).on('error', (e) => {images = [];});
 
 req.end();
-var client = new Discord.Client({
-   token: process.env.auth,
-   autorun: true
-});
+var client = new Discord.Client();
 
 
 var pots = 'CEug9Fi';
+console.log(process.env);
 
 client.on('message', msg => {
   var message = msg.content.split(' ');
@@ -56,7 +49,6 @@ client.on('message', msg => {
       }).on('end', function() {
         var data = Buffer.concat(images);
         images = JSON.parse(data).data;
-        console.log(images);
         msg.reply('images refreshed!');
       });
     }).on('error', (e) => {images = [];});
@@ -65,4 +57,4 @@ client.on('message', msg => {
   }
 });
 
-client.login(token);
+client.login(process.env.auth);
