@@ -55,7 +55,7 @@ client.on('message', msg => {
     req.end();
     break;
   case '!good':
-    msg.reply('Good Morning!');
+    msg.reply('Good morning!');
     break;
   }
 });
