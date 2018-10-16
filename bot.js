@@ -63,10 +63,8 @@ client.on('message', msg => {
     msg.reply('Good morning!');
     break;
   case '!inspire':
-    req = https.request(options, function(res) {
-      res.on('data', function(d) {
-        msg.reply(d);
-      }
+    req = https.request(inspire, function(res) {
+      msg.reply(res);
     }
     req.end();
   }
