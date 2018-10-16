@@ -43,7 +43,7 @@ client.on('message', msg => {
       console.log('statusCode:', res.statusCode);
       console.log('headers:', res.headers);
       console.log('test');
-
+  
       res.on('data', function(d) {
         images.push(d);
       }).on('end', function() {
@@ -54,9 +54,9 @@ client.on('message', msg => {
     }).on('error', (e) => {images = [];});
     req.end();
     break;
-    case '!good':
-      msg.reply('Good Morning!');
-      break;
+  case '!good':
+    msg.reply('Good Morning!');
+    break;
   }
 });
 
