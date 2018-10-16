@@ -54,6 +54,9 @@ client.on('message', msg => {
     }).on('error', (e) => {images = [];});
     req.end();
     break;
+    case '!good':
+      msg.reply('Good Morning!');
+      break;
   }
 });
 
