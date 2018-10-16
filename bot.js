@@ -8,6 +8,11 @@ var options = {
   method: 'GET'
 };
 
+var inspire = {
+  hostname: 'inspirobot.me',
+  path: 'api?generate=true'
+}
+
 var images = [];
 var req = https.request(options, function(res) {
   console.log('statusCode:', res.statusCode);
@@ -57,6 +62,13 @@ client.on('message', msg => {
   case '!good':
     msg.reply('Good morning!');
     break;
+  case '!inspire':
+    req = https.request(options, function(res) {
+      res.on('data', function(d) {
+        msg.reply(d);
+      }
+    }
+    req.end();
   }
 });
 
