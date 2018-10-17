@@ -65,7 +65,7 @@ client.on('message', msg => {
   case '!inspire':
     req = https.request(inspire, function(res) {
       msg.reply(res);
-    }
+    });
     req.end();
     break;
   }
