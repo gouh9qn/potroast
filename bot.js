@@ -66,7 +66,7 @@ client.on('message', msg => {
       msg.reply('Good Halloween!');
       break;
   case '!goodnight':
-      msg.reply('Good Night!);
+      msg.reply('Good Night!');
       break;
   }
 });
