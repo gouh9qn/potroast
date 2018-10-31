@@ -59,15 +59,15 @@ client.on('message', msg => {
     }).on('error', (e) => {images = [];});
     req.end();
     break;
-  case '!good':
+  case '!goodmorning':
     msg.reply('Good morning!');
     break;
-  case '!inspire':
-    req = https.request(inspire, function(res) {
-      msg.reply(res);
-    });
-    req.end();
-    break;
+  case '!goodhalloween':
+      msg.reply('Good Halloween!');
+      break;
+  case '!goodnight':
+      msg.reply('Good Night!);
+      break;
   }
 });
 
