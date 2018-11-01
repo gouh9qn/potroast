@@ -68,6 +68,9 @@ client.on('message', msg => {
   case '!goodnight':
       msg.reply('Good Night!');
       break;
+  case '!spooky':
+      msg.reply('https://www.youtube.com/watch?v=XTgFtxHhCQ0');
+      break;
   }
 });
 
