@@ -84,4 +84,5 @@ client.on('message', msg => {
   }
 });
 
+client.user.setGame('p!help');
 client.login(process.env.auth);
