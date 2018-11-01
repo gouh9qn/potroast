@@ -83,6 +83,8 @@ client.on('message', msg => {
       break;
   }
 });
+client.on("ready", () => {
+    client.user.setActivity("p!help", { type: "WATCHING"})
+})
 
-client.user.setActivity('p!help', { type: 'WATCHING' });
 client.login(process.env.auth);
