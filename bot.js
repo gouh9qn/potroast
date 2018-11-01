@@ -77,7 +77,7 @@ client.on('message', msg => {
         title: 'Help for Pot Roasts!',
         fields: [{
           name: 'Commands',
-          value: '`!goodmorning`\n`!goodnight`\n`!happyhalloween`\n`!potroast`\n`p!help`
+          value: '`!goodmorning`\n`!goodnight`\n`!happyhalloween`\n`!potroast`\n`p!help`'
         }]
       }});
       break;
