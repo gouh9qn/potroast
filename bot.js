@@ -37,7 +37,7 @@ console.log(process.env);
 client.on('message', msg => {
   var message = msg.content.split(' ');
   switch(message[0]) {
-  case '!roast':
+  case '!potroast':
     if(images.length == 0)
     { msg.reply('Could not load images. Please try to \'!refresh\'.'); } 
     else { msg.reply('Here\'s your pot roast!', {files: [images[Math.floor(Math.random()*images.length)].link]}); }
