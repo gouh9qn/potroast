@@ -84,5 +84,5 @@ client.on('message', msg => {
   }
 });
 
-client.user.setGame('p!help');
+client.user.setActivity('p!help', { type: 'WATCHING' });
 client.login(process.env.auth);
