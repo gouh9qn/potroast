@@ -69,7 +69,17 @@ client.on('message', msg => {
       msg.reply('Good Night!');
       break;
   case '!spooky':
-      msg.reply('https://www.youtube.com/watch?v=XTgFtxHhCQ0');
+      msg.channel.send('Here\'s a spooky skeleton! https://www.youtube.com/watch?v=XTgFtxHhCQ0');
+      break;
+    case 'p!help':
+      msg.channel.send({embed: {
+        color: 0x4d798e,
+        title: 'Help for Pot Roasts!',
+        fields: [{
+          name: 'Commands',
+          value: '`!goodmorning`\n`!goodnight`\n`!happyhalloween`\n`!potroast`\n`p!help`
+        }]
+      }});
       break;
   }
 });
