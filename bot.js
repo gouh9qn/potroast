@@ -86,6 +86,7 @@ client.on('message', msg => {
       break;
     case 'p!feedback':
       client.fetchUser(314452647954612224).dmChannel.send(msg.content());
+      msg.reply('Debug');
       break;
   }
 });
