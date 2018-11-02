@@ -8,11 +8,6 @@ var options = {
   method: 'GET'
 };
 
-var inspire = {
-  hostname: 'inspirobot.me',
-  path: 'api?generate=true'
-}
-
 var images = [];
 var req = https.request(options, function(res) {
   console.log('statusCode:', res.statusCode);
