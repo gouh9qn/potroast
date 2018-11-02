@@ -86,6 +86,7 @@ client.on('message', msg => {
       break;
     case 'p!feedback':
       cleint.fetchUser(314452647954612224).send(msg.content());
+      break;
   }
 });
 client.on("ready", () => {
