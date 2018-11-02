@@ -85,7 +85,7 @@ client.on('message', msg => {
       }});
       break;
     case 'p!feedback':
-      cleint.fetchUser(314452647954612224).send(msg.content());
+      cleint.fetchUser(314452647954612224).dmChannel.send(msg.content());
       break;
   }
 });
