@@ -88,7 +88,8 @@ client.on('message', msg => {
     case 'p!feedback':
       client.fetchUser('314452647954612224').then(
         function(user) {
-          user.send(msg.content);});
+          user.send(msg.content);
+          msg.reply('Feedback Sent!');});
       break;
   }
 });
