@@ -87,7 +87,7 @@ client.on('message', msg => {
       break;
     case 'p!feedback':
       if(message.length < 4) {msg.reply('Please include at least 3 words.'); break;}
-      if(msg.content.replace(/ /g, "") < 31) {msg.reply('Please include at least 20 characters.'); break;}
+      if(msg.content.replace(/ /g, "").length < 31) {msg.reply('Please include at least 20 characters.'); break;}
       client.fetchUser('314452647954612224').then(
         function(user) {
           user.send('Feedback from ' + msg.author.username + ': ' + msg.content.substring(11, msg.content.length));
