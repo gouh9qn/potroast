@@ -73,7 +73,7 @@ client.on('message', msg => {
         title: 'Help for Pot Roasts!',
         fields: [{
           name: 'Commands',
-          value: 'Here are some basic commands:\n`!goodmorning`\n\n`!goodnight`\n\n`!happyhalloween`\n\n`!potroast`\n\n`p!help`'
+          value: 'Here are some basic commands:\n`!goodmorning`\n\n`!goodnight`\n\n`!happyhalloween`\n\n`!potroast`\n\n`p!help`\n\n`!spooky`'
         },
         {
           name: 'Feedback',
