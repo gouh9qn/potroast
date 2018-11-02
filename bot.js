@@ -97,4 +97,4 @@ client.on("ready", () => {
     client.user.setActivity("p!help", { type: "WATCHING"})
 })
 
-client.login('NDk5Mzc0NTQyNTQwNzY3MjMy.DqgR8A.u9yC9SeBoeMuWMZaHn3fxWhalV4');
+client.login(process.env.auth);
