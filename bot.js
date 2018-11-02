@@ -36,6 +36,7 @@ console.log(process.env);
 
 client.on('message', msg => {
   var message = msg.content.split(' ');
+  if(msg.author.bot) return;
   switch(message[0]) {
   case '!potroast':
     if(images.length == 0)
@@ -85,8 +86,9 @@ client.on('message', msg => {
       }});
       break;
     case 'p!feedback':
-      client.fetchUser(314452647954612224).dmChannel.send(msg.content());
-      msg.reply('Debug');
+      client.fetchUser('314452647954612224').then(
+        function(user) {
+          user.send(msg.content);});
       break;
   }
 });
@@ -94,4 +96,4 @@ client.on("ready", () => {
     client.user.setActivity("p!help", { type: "WATCHING"})
 })
 
-client.login(process.env.auth);
+client.login('NDk5Mzc0NTQyNTQwNzY3MjMy.DqgR8A.u9yC9SeBoeMuWMZaHn3fxWhalV4');
