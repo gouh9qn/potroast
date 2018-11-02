@@ -78,9 +78,14 @@ client.on('message', msg => {
         fields: [{
           name: 'Commands',
           value: 'Here are some basic commands:\n`!goodmorning`\n\n`!goodnight`\n\n`!happyhalloween`\n\n`!potroast`\n\n`p!help`'
-        }]
+        },
+        {
+          name: 'Feedback',
+          value: 'To send feedback, please do p!feedback.'}]
       }});
       break;
+    case 'p!feedback':
+      client.fetchUser(314452647954612224).send(msg.content());
   }
 });
 client.on("ready", () => {
