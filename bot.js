@@ -35,7 +35,7 @@ var pots = 'CEug9Fi';
 console.log(process.env);
 
 client.on('message', msg => {
-  var message = msg.content.split(/\s+/);
+  var message = msg.content.trim().split(/\s+/);
   if(msg.author.bot) return;
   switch(message[0]) {
   case '!potroast':
