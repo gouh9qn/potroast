@@ -104,7 +104,7 @@ client.on('message', msg => {
     case 'pr!roulette':
       if(curGame != null) {msg.reply('Game already started!'); break;}
       curID = msg.author.id;
-      msg.reply('Starting new roulette game! Please respond with p!join to join and p!start to start.').then(o => {players = []; curGame = o; playerN = [];});
+      msg.reply('Starting new roulette game! Please respond with pr!join to join and pr!start to start.').then(o => {players = []; curGame = o; playerN = [];});
       break;
     case 'pr!join':
       if(players == null) {msg.reply('No game started!'); break;}
