@@ -107,6 +107,10 @@ client.on('message', msg => {
           value: '`pr!roulette`\nStarts a new game.\n`pr!join`\nJoins a game.\n`pr!start`\nStarts the current game.\n`pr!cancel`\nCancels the current game.'
         },
         {
+          name: 'Account Commands',
+          value: '`pr!balance`\nShows you\'re balance.\n`pr!createaccount`\nCreates an account\n`pr!givemoney`\nGives youreself money, but only works if you\'re Andy'
+        },
+        {
           name: 'Feedback',
           value: 'To send feedback, please do pr!feedback.'}]
       }});
@@ -169,17 +173,23 @@ client.on('message', msg => {
       break;
     case 'pr!balance':
       getCoins(msg.author.id).then(function(t) {
-        msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(t));
+        msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(t).setColor(0x4d798e));
       }, function(err) {
-        msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription('You have not created an account yet.'));});
+        msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription('You have not created an account yet.').setColor(0x4d798e));});
       break;
     case 'pr!givemoney':
+      if(msg.author.id != '314452647954612224') {msg.reply('You are not Andy!'); break;}
       setCoins(msg.author.id, 100).then((res) => {
-        if(res == -1) msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(`You have not created an account yet.`));
-        else getCoins(msg.author.id).then((res) => {msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(`You're new balance is ${res}`))});
+        if(res == -1) msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(`You have not created an account yet.`).setColor(0x4d798e));
+        else getCoins(msg.author.id).then((res) => {msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(`You're new balance is ${res}`).setColor(0x4d798e))});
       }).catch((err) => {
         msg.channel.send(err.stack);
       });
+      break;
+    case 'pr!createaccount':
+      createUser(msg.author.id, 100).then((res) => {
+        msg.channel.send('You\'re account was created.');
+      }).catch((err) => {msg.channel.send('You already have an account.'); console.log(err.stack)});
       break;
   }
 });
@@ -219,6 +229,20 @@ function roulette(index, round = 0) {
     }
     setTimeout(function() {roulette(index+1, round+1);}, 3000);
   }, 3000);
+}
+
+function createUser(user, amt)
+{
+  return new Promise((resolve, reject) => {
+    pool.query(`INSERT INTO coin (id, amt) VALUES(${user}, ${amt})`, (err, res) => {
+      if(err) {
+        console.log(err.stack);
+        reject(new Error('Account'));
+      } else {
+        resolve('Account Created.');
+      }
+    });
+  });
 }
 
 function getCoins(user)
