@@ -1,6 +1,13 @@
 const Discord = require('discord.js');
 var https = require('https');
 
+var pg = require('pg');
+const pool = new pg.Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true,
+});
+pool.connect();
+
 var options = {
   hostname: 'api.imgur.com',
   path: '/3/album/PCYtJp8/images/',
@@ -10,9 +17,6 @@ var options = {
 
 var images = [];
 var req = https.request(options, function(res) {
-  console.log('statusCode:', res.statusCode);
-  console.log('headers:', res.headers);
-  console.log('test');
 
   res.on('data', function(d) {
     images.push(d);
@@ -26,21 +30,38 @@ req.end();
 var client = new Discord.Client();
 
 
+const changelog = "Added pr!roulette and relevent commands\nAdded pr!ping";
+const future = "Add blackjack";
+
+const botinf = {embed: {
+  color: 0x4d798e,
+  title: "Bot Info",
+  fields: [
+    {name: "Version", value: '1.1.0'},
+    {name: "Changelog", value: changelog},
+    {name: "Future Features", value: future}
+  ]
+}};
+
 var pots = 'CEug9Fi';
 var numB;
-console.log(process.env);
 
 var curGame;
+var curEmbed;
 var curID;
 var players;
 var playerN;
+var deck;
 
 client.on('message', msg => {
   var message = msg.content.trim().split(/\s+/);
   if(msg.author.bot) return;
   switch(message[0]) {
+    case 'pr!changelog':
+      msg.channel.send(botinf);
+      break;
     case 'pr!ping':
-      msg.channel.send('Pong! ' + client.ping.toFixed(2) + " ms");
+      msg.channel.send(':ping_pong: Pong! ' + client.ping.toFixed(0) + " ms");
       break;
     case 'pr!potroast':
       if(images.length == 0)
@@ -50,9 +71,6 @@ client.on('message', msg => {
     case 'pr!refresh':
       images = [];
       req = https.request(options, function(res) {
-        console.log('statusCode:', res.statusCode);
-        console.log('headers:', res.headers);
-        console.log('test');
     
         res.on('data', function(d) {
           images.push(d);
@@ -116,10 +134,30 @@ client.on('message', msg => {
     case 'pr!start':
       if(players == null) {msg.reply('No game started!'); break;}
       if(msg.author.id != curID) {msg.reply('You didn\'t create the game!'); break;}
-      if(players.length == 0) {msg.reply('No one has joined!'); break;}
-      msg.channel.send('Starting Game!').then(mess => {curGame = mess;
+      if(players.length < 2) {msg.reply('Not enough players have joined!'); break;}
+      curEmbed = {embed: {
+        color: 0xf4a142,
+        title: 'Russian Roulette',
+        fields: []
+      }};
+      lost = [players.length];
+      for(var i = players.length - 1; i >= 0; i--)
+      {
+        lost[i] = false;
+        var p = Math.floor(Math.random()*i);
+        var t = players[i];
+        players[i] = players[p];
+        players[p] = t;
+        curEmbed.embed.fields.unshift({name: players[i].username,
+          value: ':white_check_mark:',
+          inline: true
+        });
+      }
+      curEmbed.embed.fields.push({name: 'Starting',
+        value: 'A game is starting!'});
+      msg.channel.send(curEmbed).then(mess => {curGame = mess;
       numB = 6;
-      numT = players.length;
+      numT = players.length-1;
       setTimeout(function() {roulette(0);}, 3000)});
       break;
     case 'pr!cancel':
@@ -129,33 +167,100 @@ client.on('message', msg => {
       players = null;
       msg.reply('Game canceled!');
       break;
+    case 'pr!balance':
+      getCoins(msg.author.id).then(function(t) {
+        msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(t));
+      }, function(err) {
+        msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription('You have not created an account yet.'));});
+      break;
+    case 'pr!givemoney':
+      setCoins(msg.author.id, 100).then((res) => {
+        if(res == -1) msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(`You have not created an account yet.`));
+        else getCoins(msg.author.id).then((res) => {msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(`You're new balance is ${res}`))});
+      }).catch((err) => {
+        msg.channel.send(err.stack);
+      });
+      break;
   }
 });
 
-function roulette(index) {
-  if(players.length == 1) {curGame.channel.send(players[0].username + ' is the winner!');
-    var t = function() {return null;};
-    players = t();
-    curGame = t(); return;}
+function roulette(index, round = 0) {
   if(index == players.length) index = 0;
-  curGame.edit(players[index].username + ' is taking their turn! There are ' + numT + ' out of ' + numB + ' bullets left, and ' + players.length + ' players left!');
+  if(lost[index]) {roulette(index+1, round); return;}
+  if(numT == 0) {
+    curGame.channel.send(players[index].username + ' wins the game!');
+    players = null;
+    curGame = null;
+    return;
+  }
+  curEmbed.embed.fields[curEmbed.embed.fields.length-1] = {
+    name: 'Round ' + (round+1),
+    value: players[index].username + ' rolls the cylinder.'
+  };
+  curGame.edit(curEmbed);
+  if(numT > 1)
+    setTimeout(function() {curEmbed.embed.fields[curEmbed.embed.fields.length-1].value += '\nThere are ' + numT + ' bullets left.';curGame.edit(curEmbed);}, 1000);
+  else
+    setTimeout(function() {curEmbed.embed.fields[curEmbed.embed.fields.length-1].value += '\nThere is ' + numT + ' bullet left.';curGame.edit(curEmbed);}, 1000);
+
   var b = Math.floor(Math.random()*numB);
   setTimeout(function() {
     if(b < numT)
     {
       numT--;
-      curGame.edit(players[index].username + ' was eliminated! Oh no!');
-      players.splice(index, 1);
+      curEmbed.embed.fields[curEmbed.embed.fields.length-1].value +=  '\nHe is shot in the foot!';
+      lost[index] = true;
+      curEmbed.embed.fields[index].value = ':x:';
+      curGame.edit(curEmbed);
     } else
     {
-      curGame.edit(players[index].username + ' didn\'t die!');
+      curEmbed.embed.fields[curEmbed.embed.fields.length-1].value += '\nHe was lucky this time!';
+      curGame.edit(curEmbed);
     }
-    setTimeout(function() {roulette(index+1);}, 3000);
+    setTimeout(function() {roulette(index+1, round+1);}, 3000);
   }, 3000);
 }
 
+function getCoins(user)
+{
+  return new Promise(function(resolve, reject) {
+    pool.query(`SELECT amt FROM coin WHERE id = '${user}'`, (err, res) => {
+      if (err) {
+        console.log(err.stack);
+      } else {
+        console.log(res);
+        if(res.rows.length == 0) {reject(new Error('Its borken')); console.log('Debug');}
+        else
+        {console.log(res.rows[0].amt);
+                resolve(res.rows[0].amt);}
+      }
+    });
+  });
+}
+
+function setCoins(user, amt)
+{
+  return new Promise((resolve, reject) => {
+    getCoins(user).then((res) => {
+      var temp = `UPDATE coin SET amt = amt + ${amt} WHERE id = '${user}'`;
+      console.log(temp);
+      pool.query(temp, (err, res) => {
+        if(err) {
+          console.log(err.stack);
+          reject(new Error('An error occured.'));
+        } else
+        {
+          resolve(0);
+        }
+      })
+    }).catch((err) => {
+      resolve(-1);
+    });
+  });
+}
+
 client.on("ready", () => {
-    client.user.setActivity("p!help", { type: "WATCHING"})
-})  
+    client.user.setActivity("pr!help", { type: "WATCHING"});
+});
 
 client.login(process.env.auth);
