@@ -172,7 +172,7 @@ client.on('message', msg => {
     case 'pr!start':
       msg.reply('deeeebug');
       curGame = curGames.get(msg.channel.id);
-      msg.reply(curGame.toString());
+      msg.reply(JSON.stringify(curGame));
       if(curGame == null) {msg.reply('No game started in this channel!'); break;}
       if(msg.author.id != curGame.curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
       if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
