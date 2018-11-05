@@ -36,7 +36,9 @@ const future = "Add blackjack";
 
 const botinf = {embed: {
   color: 0x4d798e,
-  title: "Bot Info",
+  title: "Changelog",
+  description: "Click on the link above for the full changelog.",
+  url: 'https://github.com/Xylenox/potroast/blob/master/changelog.txt',
   fields: [
     {name: "Version", value: '1.1.1'},
     {name: "Changelog", value: changelog},
@@ -173,7 +175,7 @@ client.on('message', msg => {
       curGame = curGames.get(msg.channel.id);
       if(curGame == null) {msg.reply('No game started in this channel!'); break;}
       if(msg.author.id != curGame.curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
-      if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
+//      if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
       curGame.curEmbed = {embed: {
         color: 0xf4a142,
         title: 'Russian Roulette',
@@ -199,7 +201,7 @@ client.on('message', msg => {
         t = curGame.bids[i];
         curGame.bids[i] = curGame.bids[p];
         curGame.bids[p] = t;
-        curGame.curEmbed.embed.fields.unshift({name: players[i].username,
+        curGame.curEmbed.embed.fields.unshift({name: curGame.players[i].username,
           value: ':white_check_mark:',
           inline: true
         });
@@ -209,7 +211,7 @@ client.on('message', msg => {
       msg.channel.send(curGame.curEmbed).then(mess => {curGame.curGame = mess;
       curGame.numB = 6;
       curGame.numT = curGame.players.length-1;
-      curGames.remove(curGame);
+      curGames.delete(msg.channel.id);
       setTimeout(function() {roulette(0, 0, curGame);}, 3000)});
       break;
     case 'pr!unjoin':
@@ -226,7 +228,9 @@ client.on('message', msg => {
       curGame = curGames.get(msg.channel.id);
       if(curGame == null) {msg.reply('No game started!'); break;}
       if(msg.author.id != curGame.curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
-      curGames.delete(curGame);
+      curGames.delete(msg.channel.id);
+      for(var i = 0; i < curGame.players.length; i++)
+        allPlayers.splice(allPlayers.indexOf(curGame.players[i]), 1);
       msg.reply('Game canceled!');
       break;
     case 'pr!balance':
@@ -271,11 +275,11 @@ function roulette(index, round = 0, curGame) {
     name: 'Round ' + (round+1),
     value: curGame.players[index].username + ' rolls the cylinder.'
   };
-  curGame.curGame.edit(curEmbed);
-  if(numT > 1)
-    setTimeout(function() {curGame.curEmbed.embed.fields[curEmbed.embed.fields.length-1].value += '\nThere are ' + numT + ' bullets left.';curGame.curGame.edit(curEmbed);}, 1000);
+  curGame.curGame.edit(curGame.curEmbed);
+  if(curGame.numT > 1)
+    setTimeout(function() {curGame.curEmbed.embed.fields[curGame.curEmbed.embed.fields.length-1].value += '\nThere are ' + curGame.numT + ' bullets left.';curGame.curGame.edit(curGame.curEmbed);}, 1000);
   else
-    setTimeout(function() {curGame.curEmbed.embed.fields[curEmbed.embed.fields.length-1].value += '\nThere is ' + numT + ' bullet left.';curGame.curGame.edit(curEmbed);}, 1000);
+    setTimeout(function() {curGame.curEmbed.embed.fields[curGame.curEmbed.embed.fields.length-1].value += '\nThere is ' + curGame.numT + ' bullet left.';curGame.curGame.edit(curGame.curEmbed);}, 1000);
 
   setTimeout(function() {
     if(curGame.bullets[round])
@@ -284,13 +288,13 @@ function roulette(index, round = 0, curGame) {
       curGame.curEmbed.embed.fields[curGame.curEmbed.embed.fields.length-1].value +=  '\nHe is shot in the foot!';
       curGame.lost[index] = true;
       curGame.curEmbed.embed.fields[index].value = ':x:';
-      curGame.curGame.edit(curEmbed);
-      setCoins(curGame.players[index].id, -1*curGame.bid[index]);
+      curGame.curGame.edit(curGame.curEmbed);
+      setCoins(curGame.players[index].id, -1*curGame.bids[index]);
       allPlayers.splice(allPlayers.indexOf(curGame.players[index]), 1);
     } else
     {
       curGame.curEmbed.embed.fields[curGame.curEmbed.embed.fields.length-1].value += '\nHe was lucky this time!';
-      curGame.curGame.edit(curEmbed);
+      curGame.curGame.edit(curGame.curEmbed);
     }
     setTimeout(function() {roulette(index+1, round+1, curGame);}, 3000);
   }, 3000);
