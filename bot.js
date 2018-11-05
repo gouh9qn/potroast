@@ -122,7 +122,7 @@ client.on('message', msg => {
           msg.reply('Feedback Sent!');});
       break;
     case 'pr!roulette':
-      if(curGames.get(msg.channel) != null) {msg.reply('Game already started!');
+      if(curGames.get(msg.channel.id) != null) {msg.reply('Game already started!');
       break;}
       var bid = parseInt(message[1]);
       if(isNaN(bid)) {msg.reply('Please enter a valid number to bid!');
