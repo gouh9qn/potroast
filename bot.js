@@ -49,13 +49,7 @@ var pots = 'CEug9Fi';
 var curGames = new Map();
 var curChannels = [];
 var allPlayers = [];
-var curEmbeds = [];
-var players = [];
-var minBids = [];
 var playerN;
-var bidss = [];
-var pots = [];
-var bulletss = [];
 
 client.on('message', msg => {
   var message = msg.content.trim().split(/\s+/);
