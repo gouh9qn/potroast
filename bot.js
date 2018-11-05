@@ -175,7 +175,7 @@ client.on('message', msg => {
       msg.reply(curGame);
       if(curGame == null) {msg.reply('No game started in this channel!'); break;}
       if(msg.author.id != curGame.curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
-      //if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
+      if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
       curGame.curEmbed = {embed: {
         color: 0xf4a142,
         title: 'Russian Roulette',
