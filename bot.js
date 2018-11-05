@@ -179,6 +179,7 @@ client.on('message', msg => {
         title: 'Russian Roulette',
         fields: []
       }};
+      msg.reply('deboog');
       curGame.lost = new Array(curGame.players.length);
       var count = curGame.players.length-1;
       curGame.bullets = new Array(8);
