@@ -170,6 +170,7 @@ client.on('message', msg => {
       });
       break;
     case 'pr!start':
+      msg.reply('deeeebug');
       curGame = curGames.get(msg.channel.id);
       msg.reply(curGame);
       if(curGame == null) {msg.reply('No game started in this channel!'); break;}
