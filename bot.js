@@ -262,12 +262,12 @@ function roulette(index, round = 0, curGame) {
   if(curGame.numT == 0) {
     if(curGame.bids[index] != -1)
     {
-      curGame.curGame.channel.send(`<@${players[index].id}> wins the game! He won ${pot-bids[index]} meme coins!`);
+      curGame.curGame.channel.send(`<@${curGame.players[index].id}> wins the game! He won ${curGame.pot-curGame.bids[index]} meme coins!`);
       setCoins(curGame.players[index].id, curGame.pot-curGame.bids[index]);
       allPlayers.splice(allPlayers.indexOf(curGame.players[index]), 1);
     } else
     {
-      curGame.curGame.channel.send(`<@${player[index].toString}> wins the game, but they don't have an account, so they don't win anything!`);
+      curGame.curGame.channel.send(`<@${curGame.player[index].toString}> wins the game, but they don't have an account, so they don't win anything!`);
     }
     return;
   }
