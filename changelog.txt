@@ -1,0 +1,21 @@
+Changelog:
+
+v1.1.1
+Features:
+- Added meme coins
+- Added ability to do multiple games in different channels
+
+Commands:
+- pr!unjoin
+- pr!balance
+- pr!createaccount
+- pr!givemoney
+
+v1.1.0
+Features:
+- Added Russian Roulette
+
+Commands:
+- pr!roulette
+- pr!join
+- pr!start
