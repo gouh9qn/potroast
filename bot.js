@@ -46,15 +46,16 @@ const botinf = {embed: {
 
 var pots = 'CEug9Fi';
 
-var curGame;
-var curEmbed;
-var curID;
-var players
-var bid;
+var curGames = new Map();
+var curChannels = [];
+var allPlayers = [];
+var curEmbeds = [];
+var players = [];
+var minBids = [];
 var playerN;
-var bids;
-var pot;
-var bullets;
+var bidss = [];
+var pots = [];
+var bulletss = [];
 
 client.on('message', msg => {
   var message = msg.content.trim().split(/\s+/);
@@ -127,22 +128,23 @@ client.on('message', msg => {
           msg.reply('Feedback Sent!');});
       break;
     case 'pr!roulette':
-      if(curGame != null) {msg.reply('Game already started!');
+      if(curChannels.includes(msg.channel)) {msg.reply('Game already started!');
       break;}
-      bid = parseInt(message[1]);
+      var bid = parseInt(message[1]);
       if(isNaN(bid)) {msg.reply('Please enter a valid number to bid!');
-       break;}
-      msg.reply('Created a new game! Please reply with `pr!join` to join and `pr!start` to start!')
-      curGame = msg;
-      playerN = [];
-      players = [];
-      bids = [];
-      pot = 0;
+        break;}
+      curGames.set(msg.channel.id, ({curGame: message,
+        players: [],
+        minBets: bid,
+        bids: [],
+        pot: 0
+      }));
+      msg.reply('Created a new game! Please reply with `pr!join` to join and `pr!start` to start!');
       break;
     case 'pr!join':
-      if(players == null) {msg.reply('No game started!'); break;}
-      if(players.includes(msg.author)) {msg.reply('You already joined!'); break;}
-      if(players.length == 8) {msg.reply('The game is at max capacity!'); break;}
+      if(curGames.get(msg.channel.id) == null) {msg.reply('No game started in this channel!'); break;}
+      if(allPlayers.includes(msg.author)) {msg.reply('You already joined a game!'); break;}
+      if(curGames.get(msg.channel.id).players.length == 8) {msg.reply('The game is at max capacity!'); break;}
       getCoins(msg.author.id).then((res) =>
       {
         var temp = parseInt(message[1]);
@@ -154,9 +156,10 @@ client.on('message', msg => {
           else
           {
             msg.reply('Game joined!');
-            players.push(msg.author);
-            bids.push(temp);
-            pot += temp;
+            curGames.get(msg.channel.id).players.push(msg.author);
+            allPlayers.push(msg.author);
+            curGames.get(msg.channel.id).bids.push(temp);
+            curGames.get(msg.channel.id).pot += temp;
           }
         }
       }).catch((err) => {
@@ -166,49 +169,52 @@ client.on('message', msg => {
       });
       break;
     case 'pr!start':
-      if(players == null) {msg.reply('No game started!'); break;}
-      if(msg.author.id != curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
-      if(players.length < 2) {msg.reply('Not enough players have joined!'); break;}
-      curEmbed = {embed: {
+      curGame = curGames.get(msg.channel.id);
+      if(curGame == null) {msg.reply('No game started in this channel!'); break;}
+      if(msg.author.id != curGame.curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
+      if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
+      curGame.curEmbed = {embed: {
         color: 0xf4a142,
         title: 'Russian Roulette',
         fields: []
       }};
-      lost = [players.length];
-      var count = players.length-1;
-      bullets = new Array(8);
+      curGame.lost = new Array(curGame.players.length);
+      var count = curGame.players.length-1;
+      curGame.bullets = new Array(8);
       while(count != 0)
       {
         var p = Math.floor(Math.random()*8);
-        if(bullets[p]) continue;
-        bullets[p] = true;
+        if(curGame.bullets[p]) continue;
+        curGame.bullets[p] = true;
         count--;
       }
-      for(var i = players.length - 1; i >= 0; i--)
+      for(var i = curGame.players.length - 1; i >= 0; i--)
       {
-        lost[i] = false;
+        curGame.lost[i] = false;
         var p = Math.floor(Math.random()*i);
-        var t = players[i];
-        players[i] = players[p];
-        players[p] = t;
-        t = bids[i];
-        bids[i] = bids[p];
-        bids[p] = t;
-        curEmbed.embed.fields.unshift({name: players[i].username,
+        var t = curGame.players[i];
+        curGame.players[i] = curGame.players[p];
+        curGame.players[p] = t;
+        t = curGame.bids[i];
+        curGame.bids[i] = curGame.bids[p];
+        curGame.bids[p] = t;
+        curGame.curEmbed.embed.fields.unshift({name: players[i].username,
           value: ':white_check_mark:',
           inline: true
         });
       }
-      curEmbed.embed.fields.push({name: 'Starting',
+      curGame.curEmbed.embed.fields.push({name: 'Starting',
         value: 'A game is starting!'});
-      msg.channel.send(curEmbed).then(mess => {curGame = mess;
+      msg.channel.send(curGame.curEmbed).then(mess => {curGame = mess;
       numB = 6;
-      numT = players.length-1;
-      setTimeout(function() {roulette(0);}, 3000)});
+      numT = curGame.players.length-1;
+      curGames.remove(curGame);
+      setTimeout(function() {roulette(0, curGame);}, 3000)});
       break;
     case 'pr!cancel':
-      if(players == null) {msg.reply('No game started!'); break;}
-      if(msg.author.id != curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
+      curGame = curGames.get(msg.channel);
+      if(curGame == null) {msg.reply('No game started!'); break;}
+      if(msg.author.id != curGame.curGame) {msg.reply('You didn\'t create the game!'); break;}
       curGame = null;
       players = null;
       msg.reply('Game canceled!');
@@ -229,7 +235,7 @@ client.on('message', msg => {
       });
       break;
     case 'pr!createaccount':
-      createUser(msg.author.id, 100).then((res) => {
+      createUser(msg.author.id, 1000).then((res) => {
         msg.channel.send('You\'re account was created.');
       }).catch((err) => {msg.channel.send('You already have an account.'); console.log(err.stack)});
       break;
@@ -245,7 +251,7 @@ function roulette(index, round = 0) {
       curGame.channel.send(`<@${players[index].id}> wins the game! He won ${pot-bids[index]} meme coins!`);
       setCoins(players[index].id, pot-bids[index]);
       for(var i = 0; i < players.length; i++)
-        if(players[i].id != players[index].id) setCoins(players[i].id, bids[i]*-1);
+        if(i != index) setCoins(players[i].id, bids[i]*-1);
     } else
     {
       curGame.channel.send(`<@${player[index].toString}> wins the game, but they don't have an account, so they don't win anything!`);
