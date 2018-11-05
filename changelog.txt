@@ -1,5 +1,14 @@
 Changelog:
 
+v1.1.2
+Features
+- Added Slot Machine
+- Added ability to send money to others
+
+Commands
+- pr!slots
+- pr!sendmoney
+
 v1.1.1
 Features:
 - Added meme coins

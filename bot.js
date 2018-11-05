@@ -31,7 +31,13 @@ req.end();
 var client = new Discord.Client();
 
 
-const changelog = "Added meme coins, multiple channel roulette games, and `pr!unjoin`";
+const changelog = `Features
+- Added Slot Machine
+- Added ability to send money to others
+
+Commands
+- \`pr!slots\`
+- \`pr!sendmoney\``;
 const future = "Add blackjack";
 
 const botinf = {embed: {
@@ -40,7 +46,7 @@ const botinf = {embed: {
   description: "Click on the link above for the full changelog.",
   url: 'https://github.com/Xylenox/potroast/blob/master/changelog.txt',
   fields: [
-    {name: "Version", value: '1.1.1'},
+    {name: "Version", value: '1.1.2'},
     {name: "Changelog", value: changelog},
     {name: "Future Features", value: future}
   ]
@@ -102,11 +108,15 @@ client.on('message', msg => {
         },
         {
           name: 'Russian Roulette',
-          value: '`pr!roulette`\nStarts a new game.\n`pr!join`\nJoins a game.\n`pr!start`\nStarts the current game.\n`pr!cancel`\nCancels the current game.\n`pr!unjoin`\nUnjoins the current game'
+          value: '`pr!roulette`\nStarts a new game\n`pr!join`\nJoins a game\n`pr!start`\nStarts the current game\n`pr!cancel`\nCancels the current game\n`pr!unjoin`\nUnjoins the current game'
         },
         {
           name: 'Account Commands',
-          value: '`pr!balance`\nShows you\'re balance.\n`pr!createaccount`\nCreates an account\n`pr!givemoney`\nGives youreself money, but only works if you\'re Andy'
+          value: '`pr!balance`\nShows you\'re balance\n`pr!createaccount`\nCreates an account\n`pr!givemoney`\nGives youreself money, but only works if you\'re Andy\n`pr!sendmoney`\nSends money to other people'
+        },
+        {
+          name: 'Slots',
+          value: '`pr!slots`\nSelf-Explanatory'
         },
         {
           name: 'Feedback',
@@ -212,6 +222,7 @@ client.on('message', msg => {
       var index = curGame.players.indexOf(msg.author);
       if(index == -1) {msg.reply('You did not join this game yet!'); break;}
       curGame.players.splice(index, 1);
+      curGame.pot -= curGame.bids[index];
       curGame.bids.splice(index, 1);
       allPlayers.splice(allPlayers.indexOf(msg.author), 1);
       msg.reply('Succesfully quit the game!');
@@ -244,6 +255,117 @@ client.on('message', msg => {
       createUser(msg.author.id, 1000).then((res) => {
         msg.channel.send('You\'re account was created.');
       }).catch((err) => {msg.channel.send('You already have an account.'); console.log(err.stack)});
+      break;
+    case 'pr!sendmoney':
+      if(msg.mentions.users.array().length < 1) {msg.reply('Please mention someone to give money to.'); break;}
+      getCoins(msg.author.id).then((res) =>
+      {
+        var temp = parseInt(message[2]);
+        if(isNaN(temp) || temp < 0) msg.reply('Please enter a valid number to send!');
+        else
+        {
+          if(temp > res) msg.reply('You do not have enough money!');
+          else
+          {
+            var arrr = msg.mentions.users.array();
+            setCoins(arrr[0].id, temp).then(function(res) {
+              setCoins(msg.author.id, -1*temp);
+              msg.reply(`You have sent ${arrr[0].username} ${temp} meme coins!`);
+            }).catch(function(err) {
+              msg.reply('The person you are trying to send money to doesn\'t have an account!');
+              console.log(err);
+            });
+          }
+        }
+      }).catch((err) => {
+        msg.reply('Something went wrong! Perhaps you don\'t have an account.');
+      });
+      break;
+    case 'pr!slots':
+      getCoins(msg.author.id).then((res) =>
+      {
+        var temp = parseInt(message[1]);
+        if(isNaN(temp) || temp < 0) msg.reply('Please enter a valid number to send!');
+        else
+        {
+          if(temp > res) msg.reply('You do not have enough money!');
+          else
+          {
+            msg.reply(`Are you sure you want to spend ${temp} meme coins on the slot machine? Respond with \`pr!confirm\` within 30 seconds to confirm.`);
+            const filter = m => m.author.id == msg.author.id;
+            const collector = msg.channel.createMessageCollector(filter, {time: 30000, maxMatches: 1});
+            collector.on('collect', m => {
+              if(m.content.startsWith('pr!confirm'))
+              {
+                var embeded = {embed: {
+                  title: 'Spinning slot machine',
+                  fields: []
+                }};
+                msg.channel.send(embeded).then((res) =>
+                {
+                  var types = ['', ':dollar:', ':pizza:', ':dog:', ':poop:'];
+                  function getType(n) {
+                    if(n < 1) return 1;
+                    if(n < 3) return 2;
+                    if(n < 6) return 3;
+                    if(n < 10) return 4;
+                  }
+                  var spin = [];
+                  var results = [];
+                  for(var i = 0; i < 4; i++)
+                  {
+                    var te = getType(Math.floor(Math.random()*10));
+                    spin.push(te);
+                    results.push(types[te]);
+                  }
+                  var resultText = results.join(' ');
+                  console.log(resultText);
+                  embeded.embed.fields.push({name: 'Results', 
+                    value: resultText});
+                  res.edit(embeded);
+                  spin.sort();
+                  var payouts = new Map();
+                  payouts.set('1111', {val: 1000, text: 'Lottery'});
+                  payouts.set('1112', {val: 100, text: 'Dough'});
+                  payouts.set('1113', {val: 50, text: 'Expensive Dog'});
+                  payouts.set('1114', {val: 50, text: 'Expensive Poop'}),
+                  payouts.set('1122', {val: 75, text: 'Expensive Pizza'});
+                  payouts.set('1123', {val: 25, text: 'Expensive Dogs and Pizzas'});
+                  payouts.set('1222', {val: 50, text: 'Lots of Dollar Store Pizza'});
+                  payouts.set('1223', {val: 50, text: 'Lots of Dollar Store Pizza and Dogs'});
+                  payouts.set('1233', {val: 20, text: 'Lots of Dollar Store Dogs'});
+                  payouts.set('1333', {val: 2, text: 'Lots of Dollar Store Dogs'});
+                  payouts.set('2222', {val: 25, text: 'Lots of Pizza'});
+                  payouts.set('2223', {val: 10, text: 'Lots of Pizza'});
+                  payouts.set('2233', {val: 5, text: 'Lots of Pizza and Dogs'});
+                  payouts.set('2333', {val: 5, text: 'Lots of Dogs'});
+                  payouts.set('3333', {val: 2, text: 'Lots of Dogs'});
+                  payouts.set('3444', {val: 2, text: 'Lots of Poop'});
+                  payouts.set('1344', {val: 5, text: 'Crappy but Expensive Pizza'});
+                  payouts.set('2244', {val: 5, text: 'Crappy Pizza'});
+                  payouts.set('1234', {val: 5, text: 'One of Everything'});
+                  payouts.set('2334', {val: 10, text: 'Pizza, Dogs, and Poop'});
+                  payouts.set('1124', {val: 20, text: 'Expensive Dog Poop'});
+                  var resul = spin.join('');
+                  var resul = spin.join('');
+                  setCoins(msg.author.id, -1*temp);
+                  console.log(resul);
+                  if(payouts.get(resul) == null) {
+                    embeded.embed.fields.push({name: 'Payout', value: 'You didn\'t win anything. :('});
+                  } else
+                  {
+                    embeded.embed.fields.push({name: 'Payout', value: `You won ${payouts.get(resul).text} and earned ${payouts.get(resul).val} times the amount you payed!`});
+                    setCoins(msg.author.id, payouts.get(resul).val*temp);
+                  }
+                  res.edit(embeded);
+                });
+              }
+            });
+          }
+        }
+      }).catch((err) => {
+        msg.reply('Something went wrong! Perhaps you don\'t have an account.');
+      });
       break;
   }
 });
@@ -335,9 +457,9 @@ function setCoins(user, amt)
         {
           resolve(0);
         }
-      })
+      });
     }).catch((err) => {
-      resolve(-1);
+      reject(err);
     });
   });
 }
