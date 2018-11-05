@@ -260,7 +260,7 @@ function roulette(index, round = 0, curGame) {
   if(index == curGame.players.length) index = 0;
   if(curGame.lost[index]) {roulette(index+1, round, curGame); return;}
   if(curGame.numT == 0) {
-    if(curGame.bid[index] != -1)
+    if(curGame.bids[index] != -1)
     {
       curGame.curGame.channel.send(`<@${players[index].id}> wins the game! He won ${pot-bids[index]} meme coins!`);
       setCoins(curGame.players[index].id, curGame.pot-curGame.bids[index]);
