@@ -49,15 +49,7 @@ const botinf = {embed: {
 var pots = 'CEug9Fi';
 
 var curGames = new Map();
-var curChannels = [];
 var allPlayers = [];
-var curEmbeds = [];
-var players = [];
-var minBids = [];
-var playerN;
-var bidss = [];
-var pots = [];
-var bulletss = [];
 
 client.on('message', msg => {
   var message = msg.content.trim().split(/\s+/);
@@ -175,7 +167,7 @@ client.on('message', msg => {
       curGame = curGames.get(msg.channel.id);
       if(curGame == null) {msg.reply('No game started in this channel!'); break;}
       if(msg.author.id != curGame.curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
-//      if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
+      if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
       curGame.curEmbed = {embed: {
         color: 0xf4a142,
         title: 'Russian Roulette',
