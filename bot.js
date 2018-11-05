@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 var https = require('https');
+const newDeck = require('./card').newDeck; 
 
 var pg = require('pg');
 const pool = new pg.Client({
@@ -49,9 +50,11 @@ var numB;
 var curGame;
 var curEmbed;
 var curID;
-var players;
+var players
+var bid;
 var playerN;
-var deck;
+var bids;
+var pot;
 
 client.on('message', msg => {
   var message = msg.content.trim().split(/\s+/);
@@ -124,20 +127,47 @@ client.on('message', msg => {
           msg.reply('Feedback Sent!');});
       break;
     case 'pr!roulette':
-      if(curGame != null) {msg.reply('Game already started!'); break;}
-      curID = msg.author.id;
-      msg.reply('Starting new roulette game! Please respond with pr!join to join and pr!start to start.').then(o => {players = []; curGame = o; playerN = [];});
+      if(curGame != null) {msg.reply('Game already started!');
+      break;}
+      bid = parseInt(message[1]);
+      if(isNaN(bid)) {msg.reply('Please enter a valid number to bid!');
+       break;}
+      msg.reply('Created a new game! Please reply with `pr!join` to join and `pr!start` to start!')
+      curGame = msg;
+      playerN = [];
+      players = [];
+      bids = [];
+      pot = 0;
       break;
     case 'pr!join':
       if(players == null) {msg.reply('No game started!'); break;}
       if(players.includes(msg.author)) {msg.reply('You already joined!'); break;}
       if(players.length == 6) {msg.reply('The game is at max capacity!'); break;}
-      players.push(msg.author);
-      msg.reply('Game joined!');
+      getCoins(msg.author.id).then((res) =>
+      {
+        var temp = parseInt(message[1]);
+        if(isNaN(temp) || temp < 0) msg.reply('Please enter a valid number to bid!');
+        else
+        {
+          if(temp > res) msg.reply('You do not have enough money!');
+          else if(temp < bid) msg.reply(`The value you entered is less than the minimum bid of ${bid}!`);
+          else
+          {
+            msg.reply('Game joined!');
+            players.push(msg.author);
+            bids.push(temp);
+            pot += temp;
+          }
+        }
+      }).catch((err) => {
+        msg.reply('You do not have an account, but you can still participate anonymously!');
+        players.push(msg.author);
+        bids.push(-1);
+      });
       break;
     case 'pr!start':
       if(players == null) {msg.reply('No game started!'); break;}
-      if(msg.author.id != curID) {msg.reply('You didn\'t create the game!'); break;}
+      if(msg.author.id != curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
       if(players.length < 2) {msg.reply('Not enough players have joined!'); break;}
       curEmbed = {embed: {
         color: 0xf4a142,
@@ -152,6 +182,9 @@ client.on('message', msg => {
         var t = players[i];
         players[i] = players[p];
         players[p] = t;
+        t = bids[i];
+        bids[i] = bids[p];
+        bids[p] = t;
         curEmbed.embed.fields.unshift({name: players[i].username,
           value: ':white_check_mark:',
           inline: true
@@ -166,14 +199,15 @@ client.on('message', msg => {
       break;
     case 'pr!cancel':
       if(players == null) {msg.reply('No game started!'); break;}
-      if(msg.author.id != curID) {msg.reply('You didn\'t create the game!'); break;}
+      if(msg.author.id != curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
       curGame = null;
       players = null;
       msg.reply('Game canceled!');
       break;
     case 'pr!balance':
+      console.log(msg.author);
       getCoins(msg.author.id).then(function(t) {
-        msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(t).setColor(0x4d798e));
+        msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(new Number(t).toLocaleString('en') + ' meme coins').setColor(0x4d798e));
       }, function(err) {
         msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription('You have not created an account yet.').setColor(0x4d798e));});
       break;
@@ -198,7 +232,16 @@ function roulette(index, round = 0) {
   if(index == players.length) index = 0;
   if(lost[index]) {roulette(index+1, round); return;}
   if(numT == 0) {
-    curGame.channel.send(players[index].username + ' wins the game!');
+    if(bid[index] != -1)
+    {
+      curGame.channel.send(`<@${players[index].id}> wins the game! He won ${pot} meme coins!`);
+      setCoins(players[index].id, pot);
+      for(var i = 0; i < players.length; i++)
+        if(bid[i] != -1 && i != index) setCoins(players[i], bid[i]*-1);
+    } else
+    {
+      curGame.channel.send(`<@${player[index].toString}> wins the game, but they don't have an account, so they don't win anything!`);
+    }
     players = null;
     curGame = null;
     return;
@@ -248,7 +291,9 @@ function createUser(user, amt)
 function getCoins(user)
 {
   return new Promise(function(resolve, reject) {
-    pool.query(`SELECT amt FROM coin WHERE id = '${user}'`, (err, res) => {
+    var temp = `SELECT amt FROM coin WHERE id = '${user}'`;
+    console.log(temp);
+    pool.query(temp, (err, res) => {
       if (err) {
         console.log(err.stack);
       } else {
