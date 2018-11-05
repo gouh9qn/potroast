@@ -173,7 +173,7 @@ client.on('message', msg => {
       curGame = curGames.get(msg.channel.id);
       if(curGame == null) {msg.reply('No game started in this channel!'); break;}
       if(msg.author.id != curGame.curGame.author.id) {msg.reply('You didn\'t create the game!'); break;}
-      if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
+      //if(curGame.players.length < 2) {msg.reply('Not enough players have joined!'); break;}
       curGame.curEmbed = {embed: {
         color: 0xf4a142,
         title: 'Russian Roulette',
@@ -189,6 +189,7 @@ client.on('message', msg => {
         curGame.bullets[p] = true;
         count--;
       }
+      msg.reply('debug');
       for(var i = curGame.players.length - 1; i >= 0; i--)
       {
         curGame.lost[i] = false;
@@ -211,7 +212,7 @@ client.on('message', msg => {
       curGame.numB = 6;
       curGame.numT = curGame.players.length-1;
       curGames.remove(msg.channel.id);
-      setTimeout(function() {roulette(0, 0, curGame);}, 3000)});
+      setTimeout(function() {roulette(0, 0, curGame);}, 3000);});
       break;
     case 'pr!unjoin':
       curGame = curGames.get(msg.channel.id);
