@@ -133,13 +133,13 @@ client.on('message', msg => {
       var bid = parseInt(message[1]);
       if(isNaN(bid)) {msg.reply('Please enter a valid number to bid!');
         break;}
-      curGames.set(msg.channel.id, ({
+      curGames.set(msg.channel.id, {
         curGame: msg,
         players: [],
         minBets: bid,
         bids: [],
         pot: 0
-      }));
+      });
       msg.reply('Created a new game! Please reply with `pr!join` to join and `pr!start` to start!');
       break;
     case 'pr!join':
