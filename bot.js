@@ -204,12 +204,13 @@ client.on('message', msg => {
           inline: true
         });
       }
+      msg.reply('debyg');
       curGame.curEmbed.embed.fields.push({name: 'Starting',
         value: 'A game is starting!'});
-      msg.channel.send(curGame.curEmbed).then(mess => {curGame.curGame = mess;
+      msg.channel.send(curGame.curEmbed).then((mess) => {curGame.curGame = mess;
       curGame.numB = 6;
       curGame.numT = curGame.players.length-1;
-      curGames.remove(curGame);
+      curGames.remove(msg.channel.id);
       setTimeout(function() {roulette(0, 0, curGame);}, 3000)});
       break;
     case 'pr!unjoin':
