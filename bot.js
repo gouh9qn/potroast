@@ -341,11 +341,11 @@ client.on('message', msg => {
                   payouts.set('2333', {val: 5, text: 'Lots of Dogs'});
                   payouts.set('3333', {val: 3, text: 'Lots of Dogs'});
                   payouts.set('3444', {val: .5, text: 'Lots of Poop'});
-                  payouts.set('1344', {val: 4, text: 'Crappy but Expensive Pizza'});
+                  payouts.set('1344', {val: 2, text: 'Crappy but Expensive Pizza'});
                   payouts.set('2244', {val: 2, text: 'Crappy Pizza'});
-                  payouts.set('1234', {val: 5, text: 'One of Everything'});
+                  payouts.set('1234', {val: 10, text: 'One of Everything'});
                   payouts.set('2334', {val: 5, text: 'Pizza, Dogs, and Poop'});
-                  payouts.set('1124', {val: 10, text: 'Expensive Dog Poop'});
+                  payouts.set('1134', {val: 5, text: 'Expensive Dog Poop'});
                   var resul = spin.join('');
                   var resul = spin.join('');
                   setCoins(msg.author.id, -1*temp);
