@@ -293,7 +293,7 @@ client.on('message', msg => {
           {
             msg.reply(`Are you sure you want to spend ${temp} meme coins on the slot machine? Respond with \`pr!confirm\` within 30 seconds to confirm.`);
             const filter = m => m.author.id == msg.author.id;
-            const collector = msg.channel.createMessageCollector(filter, {time: 30000, maxMatches: 1});
+            const collector = msg.channel.createMessageCollector(filter, {time: 30000, maxMatches: 10});
             collector.on('collect', m => {
               if(m.content.startsWith('pr!confirm'))
               {
@@ -329,23 +329,23 @@ client.on('message', msg => {
                   payouts.set('1112', {val: 100, text: 'Dough'});
                   payouts.set('1113', {val: 50, text: 'Expensive Dog'});
                   payouts.set('1114', {val: 50, text: 'Expensive Poop'}),
-                  payouts.set('1122', {val: 75, text: 'Expensive Pizza'});
+                  payouts.set('1122', {val: 50, text: 'Expensive Pizza'});
                   payouts.set('1123', {val: 25, text: 'Expensive Dogs and Pizzas'});
-                  payouts.set('1222', {val: 50, text: 'Lots of Dollar Store Pizza'});
-                  payouts.set('1223', {val: 50, text: 'Lots of Dollar Store Pizza and Dogs'});
-                  payouts.set('1233', {val: 20, text: 'Lots of Dollar Store Dogs'});
+                  payouts.set('1222', {val: 25, text: 'Lots of Dollar Store Pizza'});
+                  payouts.set('1223', {val: 25, text: 'Lots of Dollar Store Pizza and Dogs'});
+                  payouts.set('1233', {val: 10, text: 'Lots of Dollar Store Dogs'});
                   payouts.set('1333', {val: 2, text: 'Lots of Dollar Store Dogs'});
-                  payouts.set('2222', {val: 25, text: 'Lots of Pizza'});
-                  payouts.set('2223', {val: 10, text: 'Lots of Pizza'});
+                  payouts.set('2222', {val: 12, text: 'Lots of Pizza'});
+                  payouts.set('2223', {val: 7, text: 'Lots of Pizza'});
                   payouts.set('2233', {val: 5, text: 'Lots of Pizza and Dogs'});
                   payouts.set('2333', {val: 5, text: 'Lots of Dogs'});
-                  payouts.set('3333', {val: 2, text: 'Lots of Dogs'});
+                  payouts.set('3333', {val: 3, text: 'Lots of Dogs'});
                   payouts.set('3444', {val: 2, text: 'Lots of Poop'});
-                  payouts.set('1344', {val: 5, text: 'Crappy but Expensive Pizza'});
-                  payouts.set('2244', {val: 5, text: 'Crappy Pizza'});
+                  payouts.set('1344', {val: 4, text: 'Crappy but Expensive Pizza'});
+                  payouts.set('2244', {val: 2, text: 'Crappy Pizza'});
                   payouts.set('1234', {val: 5, text: 'One of Everything'});
-                  payouts.set('2334', {val: 10, text: 'Pizza, Dogs, and Poop'});
-                  payouts.set('1124', {val: 20, text: 'Expensive Dog Poop'});
+                  payouts.set('2334', {val: 5, text: 'Pizza, Dogs, and Poop'});
+                  payouts.set('1124', {val: 10, text: 'Expensive Dog Poop'});
                   var resul = spin.join('');
                   var resul = spin.join('');
                   setCoins(msg.author.id, -1*temp);
@@ -358,6 +358,7 @@ client.on('message', msg => {
                     setCoins(msg.author.id, payouts.get(resul).val*temp);
                   }
                   res.edit(embeded);
+                  collector.stop();
                 });
               }
             });
