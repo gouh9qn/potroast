@@ -340,7 +340,7 @@ client.on('message', msg => {
                   payouts.set('2233', {val: 5, text: 'Lots of Pizza and Dogs'});
                   payouts.set('2333', {val: 5, text: 'Lots of Dogs'});
                   payouts.set('3333', {val: 3, text: 'Lots of Dogs'});
-                  payouts.set('3444', {val: 2, text: 'Lots of Poop'});
+                  payouts.set('3444', {val: .5, text: 'Lots of Poop'});
                   payouts.set('1344', {val: 4, text: 'Crappy but Expensive Pizza'});
                   payouts.set('2244', {val: 2, text: 'Crappy Pizza'});
                   payouts.set('1234', {val: 5, text: 'One of Everything'});
