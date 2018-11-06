@@ -344,7 +344,7 @@ client.on('message', msg => {
                   payouts.set('1344', {val: 2, text: 'Crappy but Expensive Pizza'});
                   payouts.set('2244', {val: 2, text: 'Crappy Pizza'});
                   payouts.set('1234', {val: 4, text: 'One of Everything'});
-                  payouts.set('2334', {val: 1, text: 'Pizza, Dogs, and Poop'});
+                  payouts.set('2334', {val: 5, text: 'Pizza, Dogs, and Poop'});
                   payouts.set('1134', {val: 5, text: 'Expensive Dog Poop'});
                   var resul = spin.join('');
                   var resul = spin.join('');
