@@ -355,7 +355,7 @@ client.on('message', msg => {
                   } else
                   {
                     embeded.embed.fields.push({name: 'Payout', value: `You won ${payouts.get(resul).text} and earned ${payouts.get(resul).val} times the amount you payed!`});
-                    setCoins(msg.author.id, payouts.get(resul).val*temp);
+                    setCoins(msg.author.id, Math.floor(payouts.get(resul).val*temp));
                   }
                   res.edit(embeded);
                   collector.stop();
