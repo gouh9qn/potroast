@@ -237,6 +237,16 @@ client.on('message', msg => {
       msg.reply('Game canceled!');
       break;
     case 'pr!balance':
+      console.log(msg.mentions.users.size);
+      if(msg.mentions.users.size >= 1) {
+        var mention = msg.mentions.users.first();
+        console.log(mention);
+        getCoins(mention.id).then(function(t) {
+          msg.channel.send(new Discord.RichEmbed().setTitle(mention.username + '\'s balance').setDescription(new Number(t).toLocaleString('en') + ' meme coins').setColor(0x4d798e));
+        }, function(err) {
+          msg.channel.send(new Discord.RichEmbed().setTitle(mention.username + '\'s balance').setDescription(mention.username + ' has not created an account yet.').setColor(0x4d798e));});
+        break;
+      }
       getCoins(msg.author.id).then(function(t) {
         msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(new Number(t).toLocaleString('en') + ' meme coins').setColor(0x4d798e));
       }, function(err) {
