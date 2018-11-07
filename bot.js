@@ -332,7 +332,6 @@ client.on('message', msg => {
                   console.log(resultText);
                   embeded.embed.fields.push({name: 'Results', 
                     value: resultText});
-                  res.edit(embeded);
                   spin.sort();
                   var payouts = new Map();
                   payouts.set('1111', {val: 100, text: 'Lottery'});
