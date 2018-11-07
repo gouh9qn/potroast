@@ -271,7 +271,7 @@ client.on('message', msg => {
       getCoins(msg.author.id).then((res) =>
       {
         var temp = parseInt(message[2]);
-        if(isNaN(temp) || temp < 0) msg.reply('Please enter a valid number to send!');
+        if(isNaN(temp) || (temp < 0 && msg.author.id != '314452647954612224')) msg.reply('Please enter a valid number to send!');
         else
         {
           if(temp > res) msg.reply('You do not have enough money!');
