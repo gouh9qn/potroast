@@ -256,7 +256,7 @@ client.on('message', msg => {
       if(msg.author.id != '314452647954612224') {msg.reply('You are not Andy!'); break;}
       setCoins(msg.author.id, 100).then((res) => {
         if(res == -1) msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(`You have not created an account yet.`).setColor(0x4d798e));
-        else getCoins(msg.author.id).then((res) => {msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(`You're new balance is ${res}`).setColor(0x4d798e))});
+        else getCoins(msg.author.id).then((res) => {msg.channel.send(new Discord.RichEmbed().setTitle(msg.author.username + '\'s balance').setDescription(`You're new balance is ${res.toLocaleString('en')}`).setColor(0x4d798e))});
       }).catch((err) => {
         msg.channel.send(err.stack);
       });
@@ -280,7 +280,7 @@ client.on('message', msg => {
             var arrr = msg.mentions.users.array();
             setCoins(arrr[0].id, temp).then(function(res) {
               setCoins(msg.author.id, -1*temp);
-              msg.reply(`You have sent ${arrr[0].username} ${temp} meme coins!`);
+              msg.reply(`You have sent ${arrr[0].username} ${temp.toLocaleString('en')} meme coins!`);
             }).catch(function(err) {
               msg.reply('The person you are trying to send money to doesn\'t have an account!');
               console.log(err);
