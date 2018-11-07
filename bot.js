@@ -301,7 +301,7 @@ client.on('message', msg => {
           if(temp > res) msg.reply('You do not have enough money!');
           else
           {
-            msg.reply(`Are you sure you want to spend ${temp} meme coins on the slot machine? Respond with \`pr!confirm\` within 30 seconds to confirm.`);
+            msg.reply(`Are you sure you want to spend ${temp.toLocaleString()} meme coins on the slot machine? Respond with \`pr!confirm\` within 30 seconds to confirm.`);
             const filter = m => m.author.id == msg.author.id;
             const collector = msg.channel.createMessageCollector(filter, {time: 30000, maxMatches: 10});
             collector.on('collect', m => {
