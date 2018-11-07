@@ -168,9 +168,7 @@ client.on('message', msg => {
           }
         }
       }).catch((err) => {
-        msg.reply('You do not have an account, but you can still participate anonymously!');
-        players.push(msg.author);
-        bids.push(-1);
+        msg.reply('You do not have an account!');
       });
       break;
     case 'pr!start':
