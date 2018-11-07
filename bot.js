@@ -157,7 +157,7 @@ client.on('message', msg => {
         else
         {
           if(temp > res) msg.reply('You do not have enough money!');
-          else if(temp < curGames.get(msg.channel.id).minBets) msg.reply(`The value you entered is less than the minimum bid of ${curGames.get(msg.channel.id).minBets}!`);
+          else if(temp < curGames.get(msg.channel.id).minBets) msg.reply(`The value you entered is less than the minimum bid of ${curGames.get(msg.channel.id).minBets.toLocaleString('en')}!`);
           else
           {
             msg.reply('Game joined!');
